@@ -1,15 +1,54 @@
 import json
 import subprocess
 import time
+import os
 
 import pyautogui
 import pygetwindow as gw
 
 
 def load_config():
-    with open("config.json", "r", encoding="utf-8") as file:
-        return json.load(file)
+    try:
+        with open("config.json", "r", encoding="utf-8") as file:
+            config = json.load(file)
 
+    except FileNotFoundError:
+        raise RuntimeError(
+            "config.json was not found. "
+            "Copy config.json.example to config.json and configure it."
+        )
+
+    except json.JSONDecodeError as error:
+        raise RuntimeError(
+            f"config.json contains invalid JSON: {error}"
+        )
+
+    required = [
+        "wow_path",
+        "username",
+        "password",
+        "account_name_saved",
+    ]
+
+    for key in required:
+        if key not in config:
+            raise RuntimeError(
+                f"Missing required config option: {key}"
+            )
+
+    return config
+
+
+def validate_wow_path(path):
+    if not os.path.isfile(path):
+        raise RuntimeError(
+            f"WoW executable was not found: {path}"
+        )
+
+    if not path.lower().endswith(".exe"):
+        raise RuntimeError(
+            "wow_path must point to a Windows executable."
+        )
 
 def wait_for_wow(timeout=30):
     print("Waiting for World of Warcraft...")
@@ -65,6 +104,8 @@ def login(config):
 def main():
     config = load_config()
 
+    validate_wow_path(config["wow_path"])
+    
     print("Launching WoW...")
     subprocess.Popen([config["wow_path"]])
 
@@ -72,4 +113,7 @@ def main():
     login(config)
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as error:
+        print(f"\nError: {error}")
