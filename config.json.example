@@ -1,5 +1,6 @@
 {
     "wow_path": "C:\\Path\\To\\WoW\\Wow.exe",
     "username": "YOUR_USERNAME",
-    "password": "YOUR_PASSWORD"
+    "password": "YOUR_PASSWORD",
+    "account_name_saved": false
 }

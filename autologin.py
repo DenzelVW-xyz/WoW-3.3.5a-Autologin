@@ -41,6 +41,26 @@ def wait_for_wow(timeout=30):
 
     raise TimeoutError("WoW window was not detected within 30 seconds.")
 
+def login(config):
+    print("Logging in...")
+
+    if config.get("account_name_saved", False):
+        # WoW already has the account name and password field is focused
+        pyautogui.hotkey("ctrl", "a")
+        pyautogui.write(config["password"], interval=0.03)
+
+    else:
+        # Username field is focused
+        pyautogui.hotkey("ctrl", "a")
+        pyautogui.write(config["username"], interval=0.03)
+
+        # Move to password field
+        pyautogui.press("tab")
+        pyautogui.hotkey("ctrl", "a")
+        pyautogui.write(config["password"], interval=0.03)
+
+    pyautogui.press("enter")
+
 
 def main():
     config = load_config()
@@ -49,14 +69,7 @@ def main():
     subprocess.Popen([config["wow_path"]])
 
     wait_for_wow()
-
-    print("Logging in...")
-
-    pyautogui.write(config["username"], interval=0.03)
-    pyautogui.press("tab")
-    pyautogui.write(config["password"], interval=0.03)
-    pyautogui.press("enter")
-
+    login(config)
 
 if __name__ == "__main__":
     main()
