@@ -1,1 +1,10 @@
+# Credentials
 config.json
+
+# Virtual environments
+.venv/
+.venv-win/
+
+# Python
+__pycache__/
+*.pyc
